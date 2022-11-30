@@ -1,5 +1,6 @@
 package ua.goit.dev6.model.dto;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class ProjectDto {
@@ -7,8 +8,7 @@ public class ProjectDto {
     private String name;
     private String descriptions;
     private int cost;
-    private Object date;
-
+    private LocalDate date;
     public ProjectDto() {
     }
 
@@ -44,19 +44,18 @@ public class ProjectDto {
         this.cost = cost;
     }
 
-    public Object getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Object date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ProjectDto)) return false;
-        ProjectDto that = (ProjectDto) o;
+        if (!(o instanceof ProjectDto that)) return false;
         return cost == that.cost && Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(descriptions, that.descriptions) && Objects.equals(date, that.date);
     }
 
@@ -65,14 +64,6 @@ public class ProjectDto {
         return Objects.hash(id, name, descriptions, cost, date);
     }
 
-    @Override
-    public String toString() {
-        return "ProjectDto{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", descriptions='" + descriptions + '\'' +
-                ", cost=" + cost +
-                ", date=" + date +
-                '}';
-    }
+
+
 }

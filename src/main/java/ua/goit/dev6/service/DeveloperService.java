@@ -1,13 +1,9 @@
 package ua.goit.dev6.service;
 
-
-import ua.goit.dev6.model.SkillLevel;
 import ua.goit.dev6.model.dao.DeveloperDao;
-import ua.goit.dev6.model.dao.DeveloperSkillRelationDao;
-import ua.goit.dev6.model.dao.SkillDao;
 import ua.goit.dev6.model.dto.DeveloperDto;
 import ua.goit.dev6.repository.DeveloperRepository;
-import ua.goit.dev6.repository.DeveloperSkillRelationRepository;
+import ua.goit.dev6.repository.ProjectRepository;
 import ua.goit.dev6.repository.SkillRepository;
 import ua.goit.dev6.service.converter.DeveloperConverter;
 
@@ -17,14 +13,15 @@ import java.util.stream.Collectors;
 
 public class DeveloperService {
     private final DeveloperRepository developerRepository;
-    private final DeveloperSkillRelationRepository developerSkillRelationRepository;
     private final SkillRepository skillRepository;
     private final DeveloperConverter developerConverter;
+    private final ProjectRepository projectRepository;
 
-    public DeveloperService(DeveloperRepository developerRepository, DeveloperSkillRelationRepository developerSkillRelationRepository, SkillRepository skillRepository, DeveloperConverter developerConverter) {
+    public DeveloperService(DeveloperRepository developerRepository, SkillRepository skillRepository,
+                            ProjectRepository projectRepository, DeveloperConverter developerConverter) {
         this.developerRepository = developerRepository;
-        this.developerSkillRelationRepository = developerSkillRelationRepository;
         this.skillRepository = skillRepository;
+        this.projectRepository = projectRepository;
         this.developerConverter = developerConverter;
     }
 
@@ -52,40 +49,15 @@ public class DeveloperService {
         developerRepository.delete(developerConverter.to(developerDto));
     }
     public List<DeveloperDto> findByProjectId(Long id){
-        return developerRepository.findByProjectId(id).stream()
+        return projectRepository.findById(id).orElseThrow(RuntimeException::new)
+                .getDevelopers().stream()
                 .map(developerConverter::from)
                 .collect(Collectors.toList());
     }
-    public List<DeveloperDto> findBySkillId(Long id){
-        return developerRepository.findBySkillId(id).stream()
-                .map(developerConverter::from)
-                .collect(Collectors.toList());
-    }
-    public long addSkill(Long developerId, Long skillId){
-        DeveloperSkillRelationDao dao = new DeveloperSkillRelationDao();
-        dao.setDeveloperId(developerId);
-        dao.setSkillId(skillId);
-        return developerSkillRelationRepository.save(dao).getId();
-    }
-    public void deleteSkill(Long developerId, Long skillId){
-        DeveloperSkillRelationDao dao = new DeveloperSkillRelationDao();
-        dao.setDeveloperId(developerId);
-        dao.setSkillId(skillId);
-        developerSkillRelationRepository.delete(dao);
-    }
-    public List<DeveloperDto> findBySkillLevel(SkillLevel skillLevel){
-        List<Long> skillIds = skillRepository.findByLevel(skillLevel).stream()
-                .map(SkillDao::getId)
-                .collect(Collectors.toList());
-        return developerRepository.findBySkillIdList(skillIds).stream()
-                .map(developerConverter::from)
-                .collect(Collectors.toList());
-    }
-    public List<DeveloperDto> findBySkillLanguage(String language){
-        List<Long> skillIds = skillRepository.findByLanguage(language).stream()
-                .map(SkillDao::getId)
-                .collect(Collectors.toList());
-        return developerRepository.findBySkillIdList(skillIds).stream()
+
+    public List<DeveloperDto> findBySkillId(Long id) {
+        return skillRepository.findById(id).orElseThrow(RuntimeException::new)
+                .getDevelopers().stream()
                 .map(developerConverter::from)
                 .collect(Collectors.toList());
     }

@@ -1,8 +1,7 @@
 package ua.goit.dev6.controller.customer;
 
 import com.google.gson.Gson;
-import ua.goit.dev6.config.DatabaseManagerConnector;
-import ua.goit.dev6.config.PropertiesConfig;
+import ua.goit.dev6.config.HibernateProvider;
 import ua.goit.dev6.model.dto.CustomerDto;
 import ua.goit.dev6.repository.CustomerRepository;
 import ua.goit.dev6.service.CustomerService;
@@ -18,22 +17,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 @WebServlet("/customers")
 public class CustomersController extends HttpServlet {
-
     private CustomerService customerService;
 
     @Override
     public void init() {
-        String dbPassword = System.getenv("dbPassword");
-        String dbUsername = System.getenv("dbUsername");
-        PropertiesConfig propertiesConfig = new PropertiesConfig();
-        Properties properties = propertiesConfig.loadProperties("application.properties");
-        DatabaseManagerConnector manager = new DatabaseManagerConnector(properties, dbUsername, dbPassword);
-        CustomerRepository customerRepository = new CustomerRepository(manager);
+        HibernateProvider dbProvider = new HibernateProvider();
+
+        CustomerRepository customerRepository = new CustomerRepository(dbProvider);
         CustomersConverter customersConverter = new CustomersConverter();
         customerService = new CustomerService(customerRepository, customersConverter);
 
@@ -54,7 +48,7 @@ public class CustomersController extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         if (req.getParameterMap().containsKey("id")) {
             Optional<CustomerDto> customerDto = customerService.findById(Long.valueOf(req.getParameter("id")));
             customerDto.ifPresent((customer) -> customerService.delete(customer));
@@ -66,7 +60,7 @@ public class CustomersController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         CustomerDto customerDto = new CustomerDto();
         customerDto.setName(req.getParameter("name"));
         customerDto.setDescriptions(req.getParameter("descriptions"));
@@ -77,7 +71,7 @@ public class CustomersController extends HttpServlet {
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String requestData = req.getReader().lines().collect(Collectors.joining());
         CustomerDto customerDto = new Gson().fromJson(requestData, CustomerDto.class);
         customerService.update(customerDto);

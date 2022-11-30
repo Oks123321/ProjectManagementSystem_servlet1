@@ -1,12 +1,9 @@
 package ua.goit.dev6.controller.developer;
 
-
-
-import ua.goit.dev6.config.DatabaseManagerConnector;
-import ua.goit.dev6.config.PropertiesConfig;
+import ua.goit.dev6.config.HibernateProvider;
 import ua.goit.dev6.model.dto.DeveloperDto;
 import ua.goit.dev6.repository.DeveloperRepository;
-import ua.goit.dev6.repository.DeveloperSkillRelationRepository;
+import ua.goit.dev6.repository.ProjectRepository;
 import ua.goit.dev6.repository.SkillRepository;
 import ua.goit.dev6.service.DeveloperService;
 import ua.goit.dev6.service.converter.DeveloperConverter;
@@ -17,7 +14,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Properties;
 
 @WebServlet("/developerEdit")
 public class DeveloperUpdatePageController extends HttpServlet {
@@ -25,17 +21,12 @@ public class DeveloperUpdatePageController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        String dbPassword = System.getenv("dbPassword");
-        String dbUsername = System.getenv("dbUsername");
-        PropertiesConfig propertiesConfig = new PropertiesConfig();
-        Properties properties = propertiesConfig.loadProperties("application.properties");
-        DatabaseManagerConnector manager = new DatabaseManagerConnector(properties, dbUsername, dbPassword);
-        DeveloperRepository developerRepository = new DeveloperRepository(manager);
-        DeveloperSkillRelationRepository dsRelationRepository = new DeveloperSkillRelationRepository(manager);
-        SkillRepository skillRepository = new SkillRepository(manager);
+        HibernateProvider dbProvider = new HibernateProvider();
+        DeveloperRepository developerRepository = new DeveloperRepository(dbProvider);
+        SkillRepository skillRepository = new SkillRepository(dbProvider);
+        ProjectRepository projectRepository = new ProjectRepository(dbProvider);
         DeveloperConverter developerConverter = new DeveloperConverter();
-        developerService = new DeveloperService(developerRepository, dsRelationRepository,
-                skillRepository, developerConverter);
+        developerService = new DeveloperService(developerRepository, skillRepository, projectRepository, developerConverter);
 
     }
 

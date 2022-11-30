@@ -1,13 +1,11 @@
 package ua.goit.dev6.controller.company;
 
 import com.google.gson.Gson;
-import ua.goit.dev6.config.DatabaseManagerConnector;
-import ua.goit.dev6.config.PropertiesConfig;
+import ua.goit.dev6.config.HibernateProvider;
 import ua.goit.dev6.model.dto.CompanyDto;
 import ua.goit.dev6.repository.CompanyRepository;
 import ua.goit.dev6.service.CompanyService;
 import ua.goit.dev6.service.converter.CompanyConverter;
-
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,7 +16,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 @WebServlet("/companies")
@@ -28,16 +25,10 @@ public class CompaniesController extends HttpServlet {
 
     @Override
     public void init() {
-        String dbPassword = System.getenv("dbPassword");
-        String dbUsername = System.getenv("dbUsername");
-        PropertiesConfig propertiesConfig = new PropertiesConfig();
-        Properties properties = propertiesConfig.loadProperties("application.properties");
-
-        DatabaseManagerConnector manager = new DatabaseManagerConnector(properties, dbUsername, dbPassword);
-        CompanyRepository companyRepository = new CompanyRepository(manager);
+        HibernateProvider dbProvider = new HibernateProvider();
+        CompanyRepository companyRepository = new CompanyRepository(dbProvider);
         CompanyConverter companyConverter = new CompanyConverter();
         companyService = new CompanyService(companyRepository, companyConverter);
-
     }
 
     @Override
@@ -55,7 +46,7 @@ public class CompaniesController extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         if (req.getParameterMap().containsKey("id")) {
             Optional<CompanyDto> companyDto = companyService.findById(Long.valueOf(req.getParameter("id")));
             companyDto.ifPresent((company) -> companyService.delete(company));
@@ -67,7 +58,7 @@ public class CompaniesController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         CompanyDto companyDto = new CompanyDto();
         companyDto.setName(req.getParameter("name"));
         companyDto.setCountry(req.getParameter("country"));
@@ -78,7 +69,7 @@ public class CompaniesController extends HttpServlet {
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String requestData = req.getReader().lines().collect(Collectors.joining());
         CompanyDto companyDto = new Gson().fromJson(requestData, CompanyDto.class);
         companyService.update(companyDto);

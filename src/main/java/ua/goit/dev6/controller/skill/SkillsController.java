@@ -1,8 +1,7 @@
 package ua.goit.dev6.controller.skill;
 
 import com.google.gson.Gson;
-import ua.goit.dev6.config.DatabaseManagerConnector;
-import ua.goit.dev6.config.PropertiesConfig;
+import ua.goit.dev6.config.HibernateProvider;
 import ua.goit.dev6.model.SkillLevel;
 import ua.goit.dev6.model.dto.SkillDto;
 import ua.goit.dev6.repository.SkillRepository;
@@ -18,7 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 @WebServlet("/skills")
@@ -28,12 +26,8 @@ public class SkillsController extends HttpServlet {
 
     @Override
     public void init() {
-        String dbPassword = System.getenv("dbPassword");
-        String dbUsername = System.getenv("dbUsername");
-        PropertiesConfig propertiesConfig = new PropertiesConfig();
-        Properties properties = propertiesConfig.loadProperties("application.properties");
-        DatabaseManagerConnector manager = new DatabaseManagerConnector(properties, dbUsername, dbPassword);
-        SkillRepository skillRepository = new SkillRepository(manager);
+        HibernateProvider dbProvider = new HibernateProvider();
+        SkillRepository skillRepository = new SkillRepository(dbProvider);
         SkillConverter skillConverter = new SkillConverter();
         skillService = new SkillService(skillRepository, skillConverter);
 
@@ -54,7 +48,7 @@ public class SkillsController extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         if (req.getParameterMap().containsKey("id")) {
             Optional<SkillDto> skillDto = skillService.findById(Long.valueOf(req.getParameter("id")));
             skillDto.ifPresent((skill) -> skillService.delete(skill));
@@ -66,7 +60,7 @@ public class SkillsController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         SkillDto skillDto = new SkillDto();
         skillDto.setLanguage(req.getParameter("language"));
         skillDto.setLevel(SkillLevel.valueOf(req.getParameter("level")));
@@ -77,7 +71,7 @@ public class SkillsController extends HttpServlet {
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String requestData = req.getReader().lines().collect(Collectors.joining());
         SkillDto skillDto = new Gson().fromJson(requestData, SkillDto.class);
         skillService.update(skillDto);

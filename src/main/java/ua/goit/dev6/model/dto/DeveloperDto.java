@@ -55,8 +55,7 @@ public class DeveloperDto {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DeveloperDto)) return false;
-        DeveloperDto that = (DeveloperDto) o;
+        if (!(o instanceof DeveloperDto that)) return false;
         return id == that.id && age == that.age && salary == that.salary && Objects.equals(first_name, that.first_name)
                 && Objects.equals(last_name, that.last_name);
     }

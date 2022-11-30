@@ -1,17 +1,24 @@
 package ua.goit.dev6.model.dao;
 
-import java.util.Objects;
+import jakarta.persistence.*;
 
+import java.util.Objects;
+import java.util.Set;
+@Entity
+@Table(name = "projects")
 public class ProjectDao {
     private Long id;
     private String name;
     private String descriptions;
     private int cost;
-    private Object date;
+    private Long date;
+
+    private Set<DeveloperDao> developers;
 
     public ProjectDao() {
     }
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -20,6 +27,7 @@ public class ProjectDao {
         this.id = id;
     }
 
+    @Column(name = "name", length = 200)
     public String getName() {
         return name;
     }
@@ -28,6 +36,7 @@ public class ProjectDao {
         this.name = name;
     }
 
+    @Column(name = "descriptions", length = 200)
     public String getDescriptions() {
         return descriptions;
     }
@@ -36,6 +45,7 @@ public class ProjectDao {
         this.descriptions = descriptions;
     }
 
+    @Column(name = "cost")
     public int getCost() {
         return cost;
     }
@@ -44,19 +54,19 @@ public class ProjectDao {
         this.cost = cost;
     }
 
-    public Object getDate() {
+    @Column(name = "date")
+    public Long getDate() {
         return date;
     }
 
-    public void setDate(Object date) {
+    public void setDate(Long date) {
         this.date = date;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ProjectDao)) return false;
-        ProjectDao that = (ProjectDao) o;
+        if (!(o instanceof ProjectDao that)) return false;
         return cost == that.cost && Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(descriptions, that.descriptions) && Objects.equals(date, that.date);
     }
 
@@ -65,14 +75,12 @@ public class ProjectDao {
         return Objects.hash(id, name, descriptions, cost, date);
     }
 
-    @Override
-    public String toString() {
-        return "ProjectDao{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", descriptions='" + descriptions + '\'' +
-                ", cost=" + cost +
-                ", date=" + date +
-                '}';
+    @ManyToMany(mappedBy = "projects")
+    public Set<DeveloperDao> getDevelopers() {
+        return developers;
+    }
+
+    public void setDevelopers(Set<DeveloperDao> developers) {
+        this.developers = developers;
     }
 }

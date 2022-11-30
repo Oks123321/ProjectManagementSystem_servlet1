@@ -1,8 +1,6 @@
 package ua.goit.dev6.controller.company;
 
-
-import ua.goit.dev6.config.DatabaseManagerConnector;
-import ua.goit.dev6.config.PropertiesConfig;
+import ua.goit.dev6.config.HibernateProvider;
 import ua.goit.dev6.model.dto.CompanyDto;
 import ua.goit.dev6.repository.CompanyRepository;
 import ua.goit.dev6.service.CompanyService;
@@ -14,7 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Properties;
 
 @WebServlet("/companyEdit")
 public class CompanyUpdatePageController extends HttpServlet {
@@ -22,13 +19,9 @@ public class CompanyUpdatePageController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        String dbPassword = System.getenv("dbPassword");
-        String dbUsername = System.getenv("dbUsername");
-        PropertiesConfig propertiesConfig = new PropertiesConfig();
-        Properties properties = propertiesConfig.loadProperties("application.properties");
+        HibernateProvider dbProvider = new HibernateProvider();
 
-        DatabaseManagerConnector manager = new DatabaseManagerConnector(properties, dbUsername, dbPassword);
-        CompanyRepository companyRepository = new CompanyRepository(manager);
+        CompanyRepository companyRepository = new CompanyRepository(dbProvider);
         CompanyConverter companyConverter = new CompanyConverter();
         companyService = new CompanyService(companyRepository, companyConverter);
     }

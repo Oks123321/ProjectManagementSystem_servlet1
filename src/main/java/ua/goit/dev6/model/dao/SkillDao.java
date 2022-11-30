@@ -1,18 +1,24 @@
 package ua.goit.dev6.model.dao;
 
+import jakarta.persistence.*;
 import ua.goit.dev6.model.SkillLevel;
 
 import java.util.Objects;
+import java.util.Set;
 
+@Entity
+    @Table(name = "skills")
 public class SkillDao {
     private Long id;
     private String language;
     private SkillLevel level;
+    Set<DeveloperDao> developers;
 
     public SkillDao() {
 
     }
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -21,6 +27,7 @@ public class SkillDao {
         this.id = id;
     }
 
+    @Column(name = "language", length = 50)
     public String getLanguage() {
         return language;
     }
@@ -28,7 +35,8 @@ public class SkillDao {
     public void setLanguage(String language) {
         this.language = language;
     }
-
+    @Enumerated(EnumType.STRING)
+    @Column(name = "level")
     public SkillLevel getLevel() {
         return level;
     }
@@ -40,8 +48,7 @@ public class SkillDao {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SkillDao)) return false;
-        SkillDao skillDao = (SkillDao) o;
+        if (!(o instanceof SkillDao skillDao)) return false;
         return Objects.equals(id, skillDao.id) && Objects.equals(language, skillDao.language) && level == skillDao.level;
     }
 
@@ -50,12 +57,13 @@ public class SkillDao {
         return Objects.hash(id, language, level);
     }
 
-    @Override
-    public String toString() {
-        return "SkillDao{" +
-                "id=" + id +
-                ", language='" + language + '\'' +
-                ", level=" + level +
-                '}';
+    @ManyToMany(mappedBy = "skills")
+    public Set<DeveloperDao> getDevelopers() {
+        return developers;
     }
+
+    public void setDevelopers(Set<DeveloperDao> developers) {
+        this.developers = developers;
+    }
+
 }

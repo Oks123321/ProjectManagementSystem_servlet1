@@ -1,9 +1,6 @@
 package ua.goit.dev6.controller.customer;
 
-
-
-import ua.goit.dev6.config.DatabaseManagerConnector;
-import ua.goit.dev6.config.PropertiesConfig;
+import ua.goit.dev6.config.HibernateProvider;
 import ua.goit.dev6.model.dto.CustomerDto;
 import ua.goit.dev6.repository.CustomerRepository;
 import ua.goit.dev6.service.CustomerService;
@@ -15,7 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Properties;
 
 @WebServlet("/customerEdit")
 public class CustomerUpdatePageController extends HttpServlet {
@@ -23,12 +19,8 @@ public class CustomerUpdatePageController extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        String dbPassword = System.getenv("dbPassword");
-        String dbUsername = System.getenv("dbUsername");
-        PropertiesConfig propertiesConfig = new PropertiesConfig();
-        Properties properties = propertiesConfig.loadProperties("application.properties");
-        DatabaseManagerConnector manager = new DatabaseManagerConnector(properties, dbUsername, dbPassword);
-        CustomerRepository customerRepository = new CustomerRepository(manager);
+        HibernateProvider dbProvider = new HibernateProvider();
+        CustomerRepository customerRepository = new CustomerRepository(dbProvider);
         CustomersConverter customersConverter = new CustomersConverter();
         customerService = new CustomerService(customerRepository, customersConverter);
     }

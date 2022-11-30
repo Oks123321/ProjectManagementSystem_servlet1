@@ -40,8 +40,7 @@ public class SkillDto {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SkillDto)) return false;
-        SkillDto skillDao = (SkillDto) o;
+        if (!(o instanceof SkillDto skillDao)) return false;
         return Objects.equals(id, skillDao.id) && Objects.equals(language, skillDao.language) && level == skillDao.level;
     }
 
@@ -50,12 +49,4 @@ public class SkillDto {
         return Objects.hash(id, language, level);
     }
 
-    @Override
-    public String toString() {
-        return "SkillDto{" +
-                "id=" + id +
-                ", language='" + language + '\'' +
-                ", level=" + level +
-                '}';
-    }
 }

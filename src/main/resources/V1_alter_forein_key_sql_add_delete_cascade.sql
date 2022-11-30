@@ -22,14 +22,3 @@ ALTER TABLE projects_developers_relation
         FOREIGN KEY (projects_id)
             REFERENCES projects(id)
             ON DELETE CASCADE;
-ALTER TABLE companies_developers_relation
-    ADD CONSTRAINT companies_developers_companies_id_fkey
-        FOREIGN KEY (companies_id)
-            REFERENCES companies(id)
-            ON DELETE CASCADE;
-ALTER TABLE companies_developers_relation
-    ADD CONSTRAINT companies_developers_companies_id_fkey
-        FOREIGN KEY (developers_id)
-            REFERENCES developers(id)
-            ON DELETE CASCADE;
-DROP TABLE companies_developers_relation;

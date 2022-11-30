@@ -1,7 +1,5 @@
 package ua.goit.dev6.controller.customer;
 
-
-
 import ua.goit.dev6.model.dto.CustomerDto;
 
 import javax.servlet.ServletException;

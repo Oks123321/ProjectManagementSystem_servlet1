@@ -1,6 +1,5 @@
 package ua.goit.dev6.service;
 
-import ua.goit.dev6.model.SkillLevel;
 import ua.goit.dev6.model.dao.SkillDao;
 import ua.goit.dev6.model.dto.SkillDto;
 import ua.goit.dev6.repository.SkillRepository;
@@ -42,14 +41,5 @@ public class SkillService {
                 .map(skillConverter::from)
                 .collect(Collectors.toList());
     }
-    public List<SkillDto> findByLanguage(String language){
-        return skillRepository.findByLanguage(language).stream()
-                .map(skillConverter::from)
-                .collect(Collectors.toList());
-    }
-    public List<SkillDto> findByLevel(SkillLevel skillLevel){
-        return skillRepository.findByLevel(skillLevel).stream()
-                .map(skillConverter::from)
-                .collect(Collectors.toList());
-    }
+
 }

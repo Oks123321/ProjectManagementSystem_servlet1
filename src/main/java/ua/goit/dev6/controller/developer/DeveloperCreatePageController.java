@@ -1,7 +1,5 @@
 package ua.goit.dev6.controller.developer;
 
-
-
 import ua.goit.dev6.model.dto.DeveloperDto;
 
 import javax.servlet.ServletException;

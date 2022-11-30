@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS projects (
     name VARCHAR(200),
     descriptions VARCHAR (200),
     cost int,
-    date DATE
+    date bigint
     );
 
 ALTER TABLE projects owner to postgres;
@@ -57,21 +57,21 @@ CREATE TABLE customers (
 );
 ALTER TABLE customers owner to postgres;
 
-CREATE TABLE IF NOT EXISTS projects_customers_relation (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    projects_id BIGINT NOT NULL,
-	customers_id BIGINT NOT NULL,
-    FOREIGN KEY(customers_id) REFERENCES customers(id),
-    FOREIGN KEY (projects_id) REFERENCES projects(id)
-);
-ALTER TABLE projects_customers_relation owner to postgres;
+--CREATE TABLE IF NOT EXISTS projects_customers_relation (
+--   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+--   projects_id BIGINT NOT NULL,
+--	customers_id BIGINT NOT NULL,
+--    FOREIGN KEY(customers_id) REFERENCES customers(id),
+--    FOREIGN KEY (projects_id) REFERENCES projects(id)
+--);
+--ALTER TABLE projects_customers_relation owner to postgres;
 
-CREATE TABLE IF NOT EXISTS companies_developers_relation (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    developers_id BIGINT NOT NULL,
-    companies_id BIGINT NOT NULL,
-    FOREIGN KEY(developers_id) REFERENCES developers(id),
-    FOREIGN KEY (companies_id) REFERENCES companies(id)
-    );
-ALTER TABLE companies_developers_relation owner to postgres;
+--CREATE TABLE IF NOT EXISTS companies_developers_relation (
+--    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+--    developers_id BIGINT NOT NULL,
+--    companies_id BIGINT NOT NULL,
+--    FOREIGN KEY(developers_id) REFERENCES developers(id),
+--    FOREIGN KEY (companies_id) REFERENCES companies(id)
+--    );
+--ALTER TABLE companies_developers_relation owner to postgres;
 

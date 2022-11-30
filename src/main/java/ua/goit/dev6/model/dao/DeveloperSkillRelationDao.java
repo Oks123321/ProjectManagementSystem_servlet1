@@ -1,7 +1,11 @@
 package ua.goit.dev6.model.dao;
 
+import jakarta.persistence.*;
+
 import java.util.Objects;
 
+@Entity
+@Table(name = "developers_skills_relation")
 public class DeveloperSkillRelationDao {
     private Long id;
     private Long developerId;
@@ -10,6 +14,19 @@ public class DeveloperSkillRelationDao {
     public DeveloperSkillRelationDao() {
     }
 
+    public DeveloperSkillRelationDao(Long developerId, Long skillId) {
+        this.developerId = developerId;
+        this.skillId = skillId;
+    }
+
+    public DeveloperSkillRelationDao(Long id, Long developerId, Long skillId) {
+        this.id = id;
+        this.developerId = developerId;
+        this.skillId = skillId;
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -18,6 +35,7 @@ public class DeveloperSkillRelationDao {
         this.id = id;
     }
 
+    @Column(name = "developers_id")
     public Long getDeveloperId() {
         return developerId;
     }
@@ -26,6 +44,7 @@ public class DeveloperSkillRelationDao {
         this.developerId = developerId;
     }
 
+    @Column(name = "skills_id")
     public Long getSkillId() {
         return skillId;
     }

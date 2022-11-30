@@ -2,11 +2,10 @@ package ua.goit.dev6.controller.project;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import ua.goit.dev6.config.DatabaseManagerConnector;
+import ua.goit.dev6.config.HibernateProvider;
 import ua.goit.dev6.config.LocalDateDeserializer;
-import ua.goit.dev6.config.PropertiesConfig;
 import ua.goit.dev6.model.dto.ProjectDto;
-import ua.goit.dev6.repository.ProjectDeveloperRelationRepository;
+import ua.goit.dev6.repository.DeveloperRepository;
 import ua.goit.dev6.repository.ProjectRepository;
 import ua.goit.dev6.service.ProjectService;
 import ua.goit.dev6.service.converter.ProjectConverter;
@@ -22,25 +21,20 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 @WebServlet("/projects")
 public class ProjectsController extends HttpServlet {
-
     private ProjectService projectService;
 
     @Override
     public void init() {
-        String dbPassword = System.getenv("dbPassword");
-        String dbUsername = System.getenv("dbUsername");
-        PropertiesConfig propertiesConfig = new PropertiesConfig();
-        Properties properties = propertiesConfig.loadProperties("application.properties");
-        DatabaseManagerConnector manager = new DatabaseManagerConnector(properties, dbUsername, dbPassword);
-        ProjectDeveloperRelationRepository pdRelationRepository = new ProjectDeveloperRelationRepository(manager);
-        ProjectRepository projectRepository = new ProjectRepository(manager);
+        HibernateProvider dbProvider = new HibernateProvider();
+
+        ProjectRepository projectRepository = new ProjectRepository(dbProvider);
         ProjectConverter projectConverter = new ProjectConverter();
-        projectService = new ProjectService(projectRepository, pdRelationRepository, projectConverter);
+        DeveloperRepository developerRepository = new DeveloperRepository(dbProvider);
+        projectService = new ProjectService(projectRepository, developerRepository, projectConverter);
 
     }
 
@@ -66,7 +60,7 @@ public class ProjectsController extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         if (req.getParameterMap().containsKey("id")) {
             Optional<ProjectDto> projectDto = projectService.findById(Long.valueOf(req.getParameter("id")));
             projectDto.ifPresent((project) -> projectService.delete(project));
@@ -78,11 +72,11 @@ public class ProjectsController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         ProjectDto projectDto = new ProjectDto();
         projectDto.setName(req.getParameter("name"));
         projectDto.setDescriptions(req.getParameter("descriptions"));
-        projectDto.setCost(Integer.valueOf(req.getParameter("cost")));
+        projectDto.setCost(Integer.parseInt(req.getParameter("cost")));
         projectDto.setDate(LocalDate.parse(req.getParameter("date")));
         projectService.create(projectDto);
         String redirect =
@@ -91,7 +85,7 @@ public class ProjectsController extends HttpServlet {
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String requestData = req.getReader().lines().collect(Collectors.joining());
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateDeserializer());

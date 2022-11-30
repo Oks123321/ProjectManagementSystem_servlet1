@@ -3,6 +3,11 @@ package ua.goit.dev6.service.converter;
 
 import ua.goit.dev6.model.dao.ProjectDao;
 import ua.goit.dev6.model.dto.ProjectDto;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+
 public class ProjectConverter implements Converter<ProjectDto, ProjectDao> {
     @Override
     public ProjectDto from(ProjectDao projectDao) {
@@ -11,7 +16,8 @@ public class ProjectConverter implements Converter<ProjectDto, ProjectDao> {
         projectDto.setName(projectDao.getName());
         projectDto.setDescriptions(projectDao.getDescriptions());
         projectDto.setCost(projectDao.getCost());
-        projectDto.setDate(projectDao.getDate());
+        LocalDate date = Instant.ofEpochMilli(projectDao.getDate()).atZone(ZoneId.systemDefault()).toLocalDate();
+        projectDto.setDate(date);
         return projectDto;
     }
 
@@ -22,7 +28,8 @@ public class ProjectConverter implements Converter<ProjectDto, ProjectDao> {
         projectDao.setName(projectDto.getName());
         projectDao.setDescriptions(projectDto.getDescriptions());
         projectDao.setCost(projectDto.getCost());
-        projectDao.setDate(projectDto.getDate());
+        Instant instant = projectDto.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
+        projectDao.setDate(instant.toEpochMilli());
         return projectDao;
     }
 }
